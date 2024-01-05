@@ -25,9 +25,3 @@ zn.storage();
 Now you can use this module to save and get your data from local database, this module must have write and read permission in device that running the module.
 
 I'm not recommend this module to organizing a bigger data because your data can corrupted and lost, this database i make to help me creating text-based game on whatsapp that running on my [whatsapp bot](https://github.com/ZTRdiamond/zanixon-wabot).
-
-# Documentation
-
-I will make the documentation later, for now I have not made the docs in detail and in this version `2.0.0` update there are quite a lot of changes so the previous docs are not relevant in my opinion, please check the code for each parameter and its use. thank you.
-
-----
