@@ -10,7 +10,7 @@ The write and read speed is depending on the device you use, this module using f
  
  ### On your terminal
  ```bash
- npm i github:ZTRdiamond/zanixon.db
+ npm i zanixon.db
  ```
  ### Then import and setup the module
  ```js
@@ -24,4 +24,4 @@ zn.storage();
  
 Now you can use this module to save and get your data from local database, this module must have write and read permission in device that running the module.
 
-I'm not recommend this module to organizing a bigger data because your data can corrupted and lost, this database i make to help me creating text-based game on whatsapp that running on my [whatsapp bot](https://github.com/ZTRdiamond/zanixon-wabot).
+Check [documentation here](https://ztrdiamond.github.io/zndb-docs).
