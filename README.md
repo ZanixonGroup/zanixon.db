@@ -6,7 +6,7 @@ The write and read speed is depending on the device you use, this module using f
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/ZTRdiamond/zanixon.db/main?style=for-the-badge) ![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/ZTRdiamond%20/zanixon.db?style=for-the-badge) ![GitHub repo size](https://img.shields.io/github/repo-size/ZTRdiamond/zanixon.db?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Author-ZTRdiamond-blue?style=for-the-badge&logo=github&color=01bdff)
 
 # Module Installation
- Im not upload this module to npm because idk how to upload it lol, then im using `npm i github:user??/repo??` to install this module from github.
+Install the module using `npm` command on your terminal.
  
  ### On your terminal
  ```bash
