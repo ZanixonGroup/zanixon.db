@@ -3,7 +3,7 @@ A simple JSON database with ease use, You can use this database for your small g
 
 The write and read speed is depending on the device you use, this module using fs to write and read data on JSON.
 
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/ZTRdiamond/zanixon.db/main?style=for-the-badge) ![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/ZTRdiamond%20/zanixon.db?style=for-the-badge) ![GitHub repo size](https://img.shields.io/github/repo-size/ZTRdiamond/zanixon.db?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Author-ZTRdiamond-blue?style=for-the-badge&logo=github&color=01bdff)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/zanixongroup/zanixon.db/main?style=for-the-badge) ![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/zanixongroup/zanixon.db?style=for-the-badge) ![GitHub repo size](https://img.shields.io/github/repo-size/zanixongroup/zanixon.db?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Author-ZTRdiamond-blue?style=for-the-badge&logo=github&color=01bdff)
 
 # Module Installation
 Install the module using `npm` command on your terminal.
