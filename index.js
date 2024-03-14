@@ -30,7 +30,7 @@ module.exports = {
     ...options
   }) {
     this.options = options || options.dir || this.options.dir;
-    if (options.dir != null && !fs.existsSync(this.options.dir)) {
+    if (options.dir != undefined && !fs.existsSync(this.options.dir)) {
       fs.mkdirSync(this.options.dir, {
         recursive: true
       });
@@ -75,7 +75,10 @@ module.exports = {
     if (fs.readFileSync(filePath, "utf8") === "") throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Invalid value of database at database named "${dbName}" in path "${filePath}"!`)}`);
     return "ZanixonDB".zanixon + " >> " + `Everything is good in database "${dbName}"!`.info;
   },
-  variables: function(data, dbName = null) {
+  isEmpty: function(value) {
+    return value === undefined || (typeof value === 'string' && value.trim().length === 0);
+  },
+  variables: function(data, dbName = undefined) {
     dbName = dbName || "default";
     const hasData = data ? data.length : 0;
     const filePath = this.databases[dbName];
@@ -91,19 +94,19 @@ module.exports = {
     }
     fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
   },
-  setKey: function(key, newKey, table = null, dbName = null) {
+  setKey: function(key, newKey, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
-    let hasKey = key ? key.length : 0;
-    let hasNewKey = newKey ? newKey.length : 0;
-    if (hasKey <= 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't reading undefined on "${key}" data`)}`);
-    if (hasNewKey > 0) {
+    let hasKey  = this.isEmpty(key);
+    let hasNewKey = this.isEmpty(newKey);
+    if (hasKey) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't reading undefined on "${key}" data`)}`);
+    if (hasNewKey) {
       const filePath = this.databases[dbName];
       if (!fs.existsSync(filePath)) {
         throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't find database path with name "${dbName}"!`)}`);
       }
 
       const content = JSON.parse(fs.readFileSync(filePath, "utf8"))
-      if (table == null) {
+      if (table == undefined) {
         content[newKey] = content[key];
         delete content[key];
       } else {
@@ -117,19 +120,19 @@ module.exports = {
       return table ? content[table][newKey] : content[newKey];
     }
   },
-  set: function(name, value, table = null, dbName = null) {
+  set: function(name, value, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
-    hasName = name ? name.length : 0;
-    hasValue = value ? `${value}`.length : 0;
-    if (hasName > 0) {
-      if (hasValue > 0) {
+    hasName = this.isEmpty(name);
+    hasValue = this.isEmpty(value);
+    if (!hasName) {
+      if (!hasValue) {
         const filePath = this.databases[dbName];
         if (!fs.existsSync(filePath)) {
           throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't find database path with name "${dbName}"!`)}`);
         }
 
         const content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-        if (table == null) {
+        if (table == undefined) {
           content[name] = value;
         } else {
           if (!content[table]) {
@@ -147,25 +150,25 @@ module.exports = {
       throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't reading undefined on "${name}" data`)}`);
     }
   },
-  setVar: function(id, name, value, table = null, dbName = null) {
+  setVar: function(id, name, value, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
     const key = `${name}_${id}`;
     const dataValue = {
       [key]: value
     };
-    const hasName = name ? name.length : 0;
-    const hasValue = value ? `${value}`.length : 0;
-    const hasId = id ? id.length : 0;
+    const hasName = this.isEmpty(name);
+    const hasValue = this.isEmpty(value);
+    const hasId = this.isEmpty(id);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
-    if (hasValue < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't save your data because the "value" parameter is not defined!`)}`);
-    if (hasId < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't save your data because the "id" parameter is not defined!`)}`)
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasValue) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't save your data because the "value" parameter is not defined or null!`)}`);
+    if (hasId) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't save your data because the "id" parameter is not defined or null!`)}`)
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       content[key] = value;
     } else {
       if (!content[table]) {
@@ -178,17 +181,17 @@ module.exports = {
     fs.writeFileSync(filePath, JSON.stringify(content, null, 2))
     return table ? content[table][name] : content[name];
   },
-  get: function(name, table = null, dbName = null) {
+  get: function(name, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
-    const hasName = name ? name.length : 0;
+    const hasName = this.isEmpty(name);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       let isName = this.has(name, table, dbName);
       if (!isName) {
         return undefined;
@@ -205,20 +208,20 @@ module.exports = {
       } else return content[table][name];
     }
   },
-  getVar: function(id, name, table = null, dbName = null) {
+  getVar: function(id, name, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
     const key = `${name}_${id}`;
-    const hasName = name ? name.length : 0;
-    const hasId = id ? id.length : 0;
+    const hasName = this.isEmpty(name);
+    const hasId = this.isEmpty(id);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
-    if (hasId < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't save your data because the "id" parameter is not defined!`)}`)
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasId) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't save your data because the "id" parameter is not defined!`)}`)
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       return content[name];
     } else {
       if (!content[table]) return undefined;
@@ -226,7 +229,7 @@ module.exports = {
       return content[table][name];
     }
   },
-  all: function(dbName, limit = null) {
+  all: function(dbName, limit = undefined) {
     dbName = dbName || "default";
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
@@ -236,7 +239,7 @@ module.exports = {
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
     let counter = 0;
     let selected = {};
-    if (limit == null) {
+    if (limit == undefined) {
       return JSON.stringify(content, null, 2);
     } else {
       for (const key in content) {
@@ -248,17 +251,17 @@ module.exports = {
       return JSON.stringify(selected, null, 2);
     }
   },
-  has: function(name, table = null, dbName = null) {
+  has: function(name, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
-    const hasName = name ? name.length : 0;
+    const hasName = this.isEmpty(name);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       for (let tableName in content) {
         if (typeof content[tableName] == "object" && content[tableName].hasOwnProperty(name)) return true;
       }
@@ -268,18 +271,18 @@ module.exports = {
       return content[table].hasOwnProperty(name);
     }
   },
-  hasVar: function(id, name, table = null, dbName = null) {
+  hasVar: function(id, name, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
     const key = `${name}_${id}`;
-    const hasName = name ? name.length : 0;
+    const hasName = this.isEmpty(name);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       for (let tableName in content) {
         if (typeof content[tableName] == "object" && content[tableName].hasOwnProperty(key)) return true;
       }
@@ -289,18 +292,18 @@ module.exports = {
       return content[table].hasOwnProperty(key);
     }
   },
-  delete: function(name, table = null, dbName = null) {
+  delete: function(name, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
-    const hasName = name ? name.length : 0;
+    const hasName = this.isEmpty(name);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
 
-    let status = null;
+    let status = undefined;
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       if (!content[name]) return false;
       delete content[name];
       status = true;
@@ -312,19 +315,19 @@ module.exports = {
     fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
     return status;
   },
-  deleteVar: function(id, name, table = null, dbName = null) {
+  deleteVar: function(id, name, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
     const key = `${name}_${id}`
-    const hasName = name ? name.length : 0;
+    const hasName = this.isEmpty(name);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "name" parameter`)}`);
 
-    let status = null;
+    let status = undefined;
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    if (table == null) {
+    if (table == undefined) {
       if (!content[key]) return false;
       delete content[key];
       status = true;
@@ -337,14 +340,14 @@ module.exports = {
     fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
     return status;
   },
-  search: function(query, table = null, dbName = null) {
+  search: function(query, table = undefined, dbName = undefined) {
     dbName = dbName || "default";
-    const hasQuery = query ? query.length : 0;
+    const hasQuery = this.isEmpty(query);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasQuery < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "query" parameter`)}`);
+    if (hasQuery) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "query" parameter`)}`);
 
     let result = {};
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -354,7 +357,7 @@ module.exports = {
         const currentValue = data[key];
         const currentKey = prefix ? `${prefix}` : key;
 
-        if (typeof currentValue === "object" && currentValue !== null && !Array.isArray(currentValue)) {
+        if (typeof currentValue === "object" && currentValue !== undefined && !Array.isArray(currentValue)) {
           if (key.includes(query) || currentValue[query]) return result = {
             [key]: content[key]
           };
@@ -365,7 +368,7 @@ module.exports = {
       });
     }
 
-    if (table == null) {
+    if (table == undefined) {
       searcher(content);
     } else {
       if (!content[table]) return {};
@@ -374,14 +377,14 @@ module.exports = {
 
     return JSON.stringify(result, null, 2);
   },
-  regEmoji: function(emojis, dbName = null) {
+  regEmoji: function(emojis, dbName = undefined) {
     dbName = dbName || "emoji";
-    const hasEmoji = emojis ? emojis.length : 0;
+    const hasEmoji = this.isEmpty(emojis);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasEmoji < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "emojis" parameter`)}`);
+    if (hasEmoji) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "emojis" parameter`)}`);
 
     const hasEmojis = this.has.bind(this);
     const setEmojis = this.set.bind(this);
@@ -392,14 +395,14 @@ module.exports = {
       }
     }
   },
-  emoji: function(name, dbName = null) {
+  emoji: function(name, dbName = undefined) {
     dbName = dbName || "emoji";
-    const hasName = name ? name.length : 0;
+    const hasName = this.isEmpty(name);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "emojis" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "emojis" parameter`)}`);
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
     if (content[name]) {
@@ -408,21 +411,21 @@ module.exports = {
       return undefined;
     }
   },
-  leaderboard: function(dbName, id = null, varValue, abbr = null, order = null, format = null, count = null, page = null) {
+  leaderboard: function(dbName, id = undefined, varValue, abbr = undefined, order = undefined, format = undefined, count = undefined, page = undefined) {
     dbName = dbName || "default";
     id = id || null;
     abbr = abbr || false;
     format = format ? format : "{rank}. {name} - {value}";
     count = count || 10;
     page = page || 10;
-    const hasId = id ? id.length : 0;
-    const hasVar = varValue ? varValue.length : 0;
+    const hasId = this.isEmpty(id);
+    const hasVar = this.isEmpty(varValue);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasId < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
-    if (hasVar < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "varValue" parameter`)}`);
+    if (hasId) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
+    if (hasVar) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "varValue" parameter`)}`);
     if (this.has(id, null, dbName)) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't find data named "${id}" in database "${dbName}" path!`)}`);
 
     let content = JSON.parse(fs.readFileSync(filePath));
@@ -465,21 +468,21 @@ module.exports = {
 
     return leaderboard;
   },
-  leaderboardPosition: function(dbName, id, varName, varValue, abbr = null, order = null, format = null) {
+  leaderboardPosition: function(dbName, id, varName, varValue, abbr = undefined, order = undefined, format = undefined) {
     dbName = dbName || "default";
     id = id || null;
     abbr = abbr || false;
     format = format ? format : "{rank}. {name} - {value}";
-    const hasId = id ? id.length : 0;
-    const hasName = varName ? varName.length : 0;
-    const hasValue = varValue ? varValue.length : 0;
+    const hasId = this.isEmpty(id);
+    const hasName = this.isEmpty(varName);
+    const hasValue = this.isEmpty(varValue);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasId < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
-    if (hasName < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "varName" parameter`)}`);
-    if (hasValue < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "varValue" parameter`)}`);
+    if (hasId) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
+    if (hasName) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "varName" parameter`)}`);
+    if (hasValue) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "varValue" parameter`)}`);
     if (!this.has(id, null, dbName)) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't find data named "${id}" in database "${dbName}" path!`)}`);
 
     let content = JSON.parse(fs.readFileSync(filePath));
@@ -521,16 +524,16 @@ module.exports = {
 
     return leaderboard;
   },
-  setCooldown: function(id, duration, dbName = null) {
+  setCooldown: function(id, duration, dbName = undefined) {
     dbName = dbName || "cooldown";
-    const hasId = id ? id.length : 0;
-    const hasDuration = duration ? `${duration}`.length : 0;
+    const hasId = this.isEmpty(id);
+    const hasDuration = this.isEmpty(duration);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasId < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
-    if (hasDuration < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "duration" parameter`)}`);
+    if (hasId) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
+    if (hasDuration) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "duration" parameter`)}`);
 
     let cooldownData = this.get(id, null, dbName);
 
@@ -550,12 +553,12 @@ module.exports = {
   getCooldown: function(id, format) {
     let dbName = "cooldown";
     format = format ? format : `{hour}h {min}m {sec}s`;
-    const hasId = id ? id.length : 0;
+    const hasId = this.isEmpty(id);
     const filePath = this.databases[dbName];
     const isExists = fs.existsSync(filePath);
 
     if (!isExists) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't open database file named "${dbName}" on path "${filePath}", Database file is not found!`)}`);
-    if (hasId < 0) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
+    if (hasId) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't read undefined data in the "id" parameter`)}`);
     if (!this.has(id, null, dbName)) return {};
 
     let content = JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -590,7 +593,7 @@ module.exports = {
       return undefined;
     }
   },
-  abbreviate: function(number, format) {
+  abbreviate: function(number, format = "0.00a") {
     const SI_SYMBOL = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "O", "N", "D", "UD", "UD", "DD", "TD", "QaD", "QiD", "SxD", "SpD", "OD", "ND", "V", "UV", "DV", "TV", "QaV", "QiV", "SxV", "SpV", "OV", "NV", "DT", "UDT", "DDT", "TDT", "QaDT", "QiDT", "SxDT", "SpDT", "ODT", "NDT", "DQa", "UDQa", "DDQa", "TDQa", "QaDQa", "QiDQa", "SxDQa", "SpDQa", "ODQa", "NDQa", "DQi", "UDQi", "DDQi", "TDQi", "QaDQi", "QiDQi", "SxDQi", "SpDQi", "ODQi", "NDQi", "DSx", "UDSx", "DDSx", "TDSx", "QaDSx", "QiDSx", "SxDSx", "SpDSx", "ODSx", "NDSx", "DSp", "UDSp", "DDSp", "TDSp", "QaDSp", "QiDSp", "SxDSp", "SpDSp", "ODSp", "NDSp", "DO", "UDO", "DDO", "TDO", "QaDO", "QiDO", "SxDO", "SpDO", "ODO", "NDO", "DN", "UDN", "DDN", "TDN", "QaDN", "QiDN", "SxDN", "SpDN", "ODN", "NDN", "C"];
     if (!isNaN(number)) {
       if (number < 1000) {
