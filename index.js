@@ -99,7 +99,7 @@ module.exports = {
     let hasKey  = this.isEmpty(key);
     let hasNewKey = this.isEmpty(newKey);
     if (hasKey) throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't reading undefined on "${key}" data`)}`);
-    if (hasNewKey) {
+    if(!hasNewKey) {
       const filePath = this.databases[dbName];
       if (!fs.existsSync(filePath)) {
         throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't find database path with name "${dbName}"!`)}`);
@@ -118,6 +118,8 @@ module.exports = {
       }
       fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
       return table ? content[table][newKey] : content[newKey];
+    } else {
+      throw new Error(`${colors.zanixon("ZanixonDB")} >> ${colors.error(`Can't reading undefined on "${newKey}" data`)}`);
     }
   },
   set: function(name, value, table = undefined, dbName = undefined) {
