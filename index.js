@@ -8,7 +8,7 @@ const Variables = new Map();
 class ZanixonDB {
   constructor(options){
     const defaultOptions = {
-      directory: options.directory || "./database",
+      directory: options.directory || "/database",
       tables: { "main": "/main/database.json" },
       showLogs: options.showLogs || false
     };
@@ -32,7 +32,7 @@ class ZanixonDB {
     // create database files
     const tables = this.tables;
     for(let table in tables) {
-      const filePath = path.join(__dirname, this.options.directory, tables[table]);
+      const filePath = path.join(this.options.directory, tables[table]);
       const isCreated = fs.existsSync(filePath);
       if(!isCreated) {
         if(!filePath.endsWith(".json")) throw new Error(`Invalid database file at ${table} ${tables[table]}`);
@@ -51,7 +51,7 @@ class ZanixonDB {
   
   async isExists(table) {
     if(!table) throw new Error(`Failed check the table, table name is not defined!`);
-    return await fs.existsSync(path.join(__dirname, this.options.directory, `${this.tables[table]}`));
+    return await fs.existsSync(path.join(this.options.directory, `${this.tables[table]}`));
   }
   
   variables(data, table = "main") {
@@ -62,7 +62,7 @@ class ZanixonDB {
   
   async setKey(oldKey, newKey, table = "main") {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
-    const filePath = path.join(__dirname, this.options.directory, this.tables[table]);
+    const filePath = path.join(this.options.directory, this.tables[table]);
     
     // checking params
     if(!this.isEmpty(oldKey)) throw new Error(`oldKey parameter value is undefined!`)
@@ -80,7 +80,7 @@ class ZanixonDB {
   
   async set(key, value, table = "main") {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
-    const filePath = path.join(__dirname, this.options.directory, this.tables[table]);
+    const filePath = path.join(this.options.directory, this.tables[table]);
     
     if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isEmpty(value)) throw new Error(`Value parameter value is undefined`)
@@ -88,14 +88,13 @@ class ZanixonDB {
     
     let content = await this.getContent(filePath);
     content = Lodash.set(content, key, value);
-    console.log(content)
     await this.setContent(filePath, content)
     return Lodash.get(content, key);
   }
   
   async get(key, table = "main") {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
-    const filePath = path.join(__dirname, this.options.directory, this.tables[table]);
+    const filePath = path.join(this.options.directory, this.tables[table]);
     
     if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
@@ -107,7 +106,7 @@ class ZanixonDB {
   
   async delete(key, table = "main") {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
-    const filePath = path.join(__dirname, this.options.directory, this.tables[table]);
+    const filePath = path.join(this.options.directory, this.tables[table]);
     
     if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
@@ -121,7 +120,7 @@ class ZanixonDB {
   
   async has(key, table = "main") {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
-    const filePath = path.join(__dirname, this.options.directory, this.tables[table]);
+    const filePath = path.join(this.options.directory, this.tables[table]);
     
     if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
@@ -134,7 +133,7 @@ class ZanixonDB {
   
   async all(table = "main") {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
-    const filePath = path.join(__dirname, this.options.directory, this.tables[table]);
+    const filePath = path.join(this.options.directory, this.tables[table]);
     return await this.getContent(filePath);
   }
   
