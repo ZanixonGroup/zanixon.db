@@ -8,7 +8,7 @@ const Variables = new Map();
 class ZanixonDB {
   constructor(options){
     const defaultOptions = {
-      directory: options.directory || "/database",
+      directory: options.directory || "./database",
       tables: { "main": "/main/database.json" },
       showLogs: options.showLogs || false
     };
@@ -45,9 +45,16 @@ class ZanixonDB {
   }
   
   isEmpty(value) {
-    if(value === null) return false
-    return !value || value === undefined || (typeof value === 'string' && value.trim().length === 0) || typeof value !== "boolean";
-  }
+  if (value === null) return false;
+  if (typeof value === 'boolean') return false;
+  if (typeof value === 'number') return false;
+  if (typeof value === 'string') return false;
+  if (Array.isArray(value)) return false;
+  if (typeof value === 'object') return false;
+  if (typeof value === 'symbol') return false;
+  if (typeof value === 'function') return false;
+  return !value;
+}
   
   async isExists(table) {
     if(!table) throw new Error(`Failed check the table, table name is not defined!`);
@@ -65,8 +72,8 @@ class ZanixonDB {
     const filePath = path.join(this.options.directory, this.tables[table]);
     
     // checking params
-    if(!this.isEmpty(oldKey)) throw new Error(`oldKey parameter value is undefined!`)
-    if(!this.isEmpty(newKey)) throw new Error(`newKey parameter value is undefined!`)
+    if(this.isEmpty(oldKey)) throw new Error(`oldKey parameter value is undefined!`)
+    if(this.isEmpty(newKey)) throw new Error(`newKey parameter value is undefined!`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
     if(!await this.has(oldKey)) return false;
     
@@ -82,8 +89,8 @@ class ZanixonDB {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
     const filePath = path.join(this.options.directory, this.tables[table]);
     
-    if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
-    if(!this.isEmpty(value)) throw new Error(`Value parameter value is undefined`)
+    if(this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
+    if(this.isEmpty(value)) throw new Error(`Value parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
     
     let content = await this.getContent(filePath);
@@ -96,7 +103,7 @@ class ZanixonDB {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
     const filePath = path.join(this.options.directory, this.tables[table]);
     
-    if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
+    if(this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
     
     let content = await this.getContent(filePath);
@@ -108,7 +115,7 @@ class ZanixonDB {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
     const filePath = path.join(this.options.directory, this.tables[table]);
     
-    if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
+    if(this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
     
     let content = await this.getContent(filePath);
@@ -122,7 +129,7 @@ class ZanixonDB {
     if(!this.tables[table]) throw new Error(`Invalid table, table with name "${table}" is not found!`);
     const filePath = path.join(this.options.directory, this.tables[table]);
     
-    if(!this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
+    if(this.isEmpty(key)) throw new Error(`Key parameter value is undefined`)
     if(!this.isExists(table)) throw new Error(`Table with name "${table}" at ${this.tables[table]} is not exists!`);
     
     let content = await this.getContent(filePath);

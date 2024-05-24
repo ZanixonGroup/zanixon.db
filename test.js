@@ -4,8 +4,7 @@ const _ = require("lodash");
 const db = new ZanixonDB({
   showLogs: true,
   tables: {
-    user: "/user/users.json",
-    rank: "/user/rank.json"
+    user: "/user/users.json"
   }
 });
 
@@ -17,5 +16,5 @@ db.variables({
   id: "dancok"
 })
 
-db.get("user.profile.id").then(d => console.log("Get:", d))
+db.set("user.profile.prem[0]", "iyah").then(d => console.log("Get:", d))
 db.setKey("user.wallet", "dompet").then(console.log)
